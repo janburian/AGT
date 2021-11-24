@@ -134,10 +134,10 @@ NIL
 1
 
 PLOT
-982
-47
-1620
-568
+1073
+240
+1273
+390
 Average cumulative wins of each population
 NIL
 NIL
