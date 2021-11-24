@@ -3,19 +3,26 @@
 
 
 turtles-own [
-  hours
   speed
   konto
 ]
 
+globals [
+  number-wins-green
+  number-wins-red
+  number-wins-blue
+  number-wins-white
+]
+
+
 to setup  ;; nastavení
   clear-all
 
-  ;; vytvoří jednotlivé populace
-  createPopulation red
-  createPopulation green
-  createPopulation blue
-  createPopulation white
+  ;; vytvoří jednotlivé populace (každá populace uplatňuje rozdílnou herní strategii)
+  createPopulation green ;; vždy spolupracuj
+  createPopulation red ;; vždy zraď
+  createPopulation blue ;; vybírej akci náhodně
+  createPopulation white ;; "oko za oko, zub za zub"
 
   reset-ticks
 
@@ -24,10 +31,42 @@ end
 
 to go      ;; hlavní procedura
 
+  move
   tick
 
 end
 
+to play
+  ask turtles [
+    if (color = green) [
+      ask other turtles in-radius 1 [
+
+
+      ]
+    ]
+
+    if (color = red) [
+      ask other turtles in-radius 1 [
+
+
+      ]
+    ]
+
+    if (color = blue) [
+      ask other turtles in-radius 1 [
+
+
+      ]
+    ]
+
+    if (color = white) [
+      ask other turtles in-radius 1 [
+
+      ]
+    ]
+ ]
+
+end
 
 to createPopulation [turtle-color]
   create-turtles num-population [
@@ -36,10 +75,17 @@ to createPopulation [turtle-color]
     set size 1
 
     set speed standard-speed
-    set hours 0
     set konto 0
     setxy random-pxcor random-pycor
    ]
+end
+
+
+to move                ;; procedura pohybu
+  ask turtles [
+    right random 360 ;; náhodný směr pohybu
+    forward 1 ;; jeden krok v náhodném směru pohybu
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -134,10 +180,10 @@ NIL
 1
 
 PLOT
-1073
-240
-1273
-390
+982
+47
+1620
+568
 Average cumulative wins of each population
 NIL
 NIL
@@ -497,6 +543,19 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="num-population">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="standard-speed">
+      <value value="2"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
