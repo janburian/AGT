@@ -4,82 +4,90 @@
 
 turtles-own [
   speed
-  konto
+  score
+  strategy
+  defect-now?
+  partner-defected?
+  partnered?
+  partner
+  partner-history
 ]
 
 globals [
-  number-wins-green
-  number-wins-red
-  number-wins-blue
-  number-wins-white
+  score-cooperate
+  score-defect
+  score-random
+  score-tit-for-tat
+
+  population-size
 ]
+
 
 
 to setup  ;; nastavení
   clear-all
-
-  ;; vytvoří jednotlivé populace (každá populace uplatňuje rozdílnou herní strategii)
-  createPopulation green ;; vždy spolupracuj
-  createPopulation red ;; vždy zraď
-  createPopulation blue ;; vybírej akci náhodně
-  createPopulation white ;; "oko za oko, zub za zub"
-
+  set population-size num-population
+  setup-populations
   reset-ticks
 
 end
 
+to setup-populations
+  create-populations
+  setup-common-variables
+end
+
+to create-populations
+  create-turtles num-population [ set strategy "cooperate" set color green ]
+  create-turtles num-population [ set strategy "defect" set color red ]
+  create-turtles num-population [ set strategy "tit-for-tat" set color blue ]
+  create-turtles num-population [ set strategy "random" set color white ]
+end
+
+to setup-common-variables
+  ask turtles [
+   set shape "person"
+   set size 1
+
+   set speed standard-speed
+   set score 0
+   set partnered? false
+   set partner nobody
+   setxy random-pxcor random-pycor
+  ]
+  setup-history-lists ;;initialize PARTNER-HISTORY list in all turtles
+end
+
+;;initialize PARTNER-HISTORY list in all turtles
+to setup-history-lists
+  let num-turtles count turtles
+  let default-history [] ;;initialize the DEFAULT-HISTORY variable to be a list
+
+  ;;create a list with NUM-TURTLE elements for storing partner histories
+  repeat num-turtles [
+    set default-history (fput false default-history) ;; fput adds an item (= false) to the beginning of a list
+  ]
+
+  ;;give each turtle a copy of this list for tracking partner histories
+  ask turtles [
+    set partner-history default-history
+  ]
+end
+
+;;---------------------------------------------------------------------------------------------------------------------
 
 to go      ;; hlavní procedura
-
+  clear-last-round
   move
+  ask turtles [ partner-up ]
+  let partnered-turtles turtles with [ partnered? ]
+  ask partnered-turtles [ select-action ]
+  ask partnered-turtles [ play-a-round ]
+  do-scoring
+
   tick
 
 end
-
-to play
-  ask turtles [
-    if (color = green) [
-      ask other turtles in-radius 1 [
-
-
-      ]
-    ]
-
-    if (color = red) [
-      ask other turtles in-radius 1 [
-
-
-      ]
-    ]
-
-    if (color = blue) [
-      ask other turtles in-radius 1 [
-
-
-      ]
-    ]
-
-    if (color = white) [
-      ask other turtles in-radius 1 [
-
-      ]
-    ]
- ]
-
-end
-
-to createPopulation [turtle-color]
-  create-turtles num-population [
-    set color turtle-color
-    set shape "person"
-    set size 1
-
-    set speed standard-speed
-    set konto 0
-    setxy random-pxcor random-pycor
-   ]
-end
-
 
 to move                ;; procedura pohybu
   ask turtles [
@@ -87,6 +95,125 @@ to move                ;; procedura pohybu
     forward 1 ;; jeden krok v náhodném směru pohybu
   ]
 end
+
+to partner-up
+  if (not partnered?) [
+    set partner one-of (turtles in-radius 1) with [ not partnered? ]
+    if partner != nobody [              ;;if successful grabbing a partner, partner up
+      set partnered? true
+      ask partner [
+        set partnered? true
+        set partner myself
+      ]
+    ]
+  ]
+end
+
+to clear-last-round
+  let partnered-turtles turtles with [ partnered? ]
+  ask partnered-turtles [ release-partners ]
+end
+
+;;release partner and turn around to leave
+to release-partners
+  set partnered? false
+  set partner nobody
+end
+
+
+;;choose an action based upon the strategy being played
+to select-action ;;turtle procedure
+  if strategy = "cooperate" [ cooperate ]
+  if strategy = "defect" [ defect ]
+  if strategy = "random" [ act-randomly ]
+  if strategy = "tit-for-tat" [ tit-for-tat ]
+end
+
+
+to play-a-round ;;turtle procedure
+  get-payoff     ;;calculate the payoff for this round
+  update-history ;;store the results for next time
+end
+
+;;calculate the payoff for this round and
+;;display a label with that payoff.
+to get-payoff
+  set partner-defected? [defect-now?] of partner
+  ifelse partner-defected? [
+    ifelse defect-now? [
+      set score (score + 1)
+    ]
+    [
+      set score (score + 0)
+    ]
+  ]
+
+  [
+    ifelse defect-now?
+    [
+      set score (score + 5)
+    ]
+    [
+      set score (score + 3)
+    ]
+  ]
+end
+
+;;update PARTNER-HISTORY
+to update-history
+  if strategy = "tit-for-tat" [ tit-for-tat-history-update ]
+end
+
+to cooperate
+  set defect-now? false
+end
+
+to defect
+  set defect-now? true
+end
+
+to act-randomly
+  ifelse (random 100 < 50) [
+    set defect-now? false
+  ] [
+    set defect-now? true
+  ]
+end
+
+to tit-for-tat
+  set partner-defected? item ([who] of partner) partner-history
+  ifelse (partner-defected?) [
+    set defect-now? true
+  ] [
+    set defect-now? false
+  ]
+end
+
+to tit-for-tat-history-update
+  set partner-history
+    (replace-item ([who] of partner) partner-history partner-defected?)
+end
+
+
+;;calculate the total scores of each strategy
+to do-scoring
+  set score-cooperate  (calc-score "cooperate" num-population)
+  set score-random (calc-score "random" num-population)
+  set score-defect  (calc-score "defect" num-population)
+  set score-tit-for-tat  (calc-score "tit-for-tat" num-population)
+end
+
+;; returns the total score for a strategy if any turtles exist that are playing it
+to-report calc-score [strategy-type num-with-strategy]
+  ifelse num-with-strategy > 0 [
+    report (sum [ score ] of (turtles with [ strategy = strategy-type ]))
+  ] [
+    report 0
+  ]
+end
+
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 236
