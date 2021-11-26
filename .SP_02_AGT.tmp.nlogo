@@ -5,19 +5,25 @@
 turtles-own [
   speed
   score
-  strategy
-  defect-now?
-  partner-defected?
-  partnered?
-  partner
+  strategy ;; strategie
+  betray-now?
+  partner-betrayed?
+  partnered? ;; boolovská hodnota, která říká, zda má/nemá želva soupeře
+  partner ;; kokrétní soupeř
   partner-history
+
 ]
 
 globals [
   score-cooperate
-  score-defect
+  score-betray
   score-random
   score-tit-for-tat
+
+  num-cooperate-games
+  num-betray-games
+  num-random-games
+  num-tit-for-tat-games
 
   population-size
 ]
@@ -39,7 +45,7 @@ end
 
 to create-populations
   create-turtles num-population [ set strategy "cooperate" set color green ]
-  create-turtles num-population [ set strategy "defect" set color red ]
+  create-turtles num-population [ set strategy "betray" set color red ]
   create-turtles num-population [ set strategy "tit-for-tat" set color blue ]
   create-turtles num-population [ set strategy "random" set color white ]
 end
@@ -80,7 +86,7 @@ to go      ;; hlavní procedura
   clear-last-round
   move
   ask turtles [ partner-up ]
-  let partnered-turtles turtles with [ partnered? ]
+  let partnered-turtles turtles with [ partnered? = true]
   ask partnered-turtles [ select-action ]
   ask partnered-turtles [ play-a-round ]
   do-scoring
@@ -118,44 +124,48 @@ end
 to release-partners
   set partnered? false
   set partner nobody
-
 end
 
 
 ;;choose an action based upon the strategy being played
 to select-action ;;turtle procedure
   if strategy = "cooperate" [ cooperate ]
-  if strategy = "defect" [ defect ]
+  if strategy = "betray" [ betray ]
   if strategy = "random" [ act-randomly ]
   if strategy = "tit-for-tat" [ tit-for-tat ]
 end
 
 
 to play-a-round ;;turtle procedure
-  get-payoff     ;;calculate the payoff for this round
+  get-payoff      ;;calculate the payoff for this round
   update-history ;;store the results for next time
 end
 
-;;calculate the payoff for this round and
-;;display a label with that payoff.
+;;calculate the payoff for this round
 to get-payoff
-  set partner-defected? [defect-now?] of partner
-  ifelse partner-defected? [
-    ifelse defect-now? [
-      set score (score + 1)
+  set partner-betrayed? [betray-now?] of partner
+
+  ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
+  ifelse partner-betrayed? [ ;; 1. moznost - partner zradi
+    ifelse betray-now? [ ;; zradim ja i partner
+      ask partner [set score (score + 1)]
+      ask self [set score (score + 1)]
     ]
-    [
-      set score (score + 0)
+    [ ;; spolupracuji, ale partner zradi
+      ask partner [set score (score + 4)]
+      ask self [set score (score + 0)]
     ]
   ]
 
-  [
-    ifelse defect-now?
-    [
-      set score (score + 5)
+  [ ;; 2. moznost - partner spolupracuje
+    ifelse betray-now?
+    [ ;; partner spolupracuje, ale ja zradim
+      ask partner [set score (score + 0)]
+      ask self [set score (score + 4)]
     ]
-    [
-      set score (score + 3)
+    [ ;; partner i ja spolupracujeme
+      ask partner [set score (score + 3)]
+      ask self [set score (score + 3)]
     ]
   ]
 end
@@ -166,51 +176,50 @@ to update-history
 end
 
 to cooperate
-  set defect-now? false
+  set num-cooperate-games num-cooperate-games + 1
+  set betray-now? false
 end
 
-to defect
-  set defect-now? true
+to betray
+  set num-betray-games num-betray-games + 1
+  set betray-now? true
 end
 
 to act-randomly
+  set num-random-games num-random-games + 1
   ifelse (random 100 < 50) [
-    set defect-now? false
+    set betray-now? true
   ] [
-    set defect-now? true
+    set betray-now? false
   ]
 end
 
 to tit-for-tat
-  set partner-defected? item ([who] of partner) partner-history
-  ifelse (partner-defected?) [
-    set defect-now? true
+  set num-tit-for-tat-games num-tit-for-tat-games + 1
+  set partner-betrayed? item ([who] of partner) partner-history
+  ifelse (partner-betrayed?) [
+    set betray-now? true
   ] [
-    set defect-now? false
+    set betray-now? false
   ]
 end
 
 to tit-for-tat-history-update
-  set partner-history
-    (replace-item ([who] of partner) partner-history partner-defected?)
+  set partner-history (replace-item ([who] of partner) partner-history partner-betrayed?)
 end
 
 
 ;;calculate the total scores of each strategy
 to do-scoring
-  set score-cooperate  (calc-score "cooperate" num-population)
-  set score-random (calc-score "random" num-population)
-  set score-defect  (calc-score "defect" num-population)
-  set score-tit-for-tat  (calc-score "tit-for-tat" num-population)
+  set score-cooperate  (calc-score "cooperate")
+  set score-random (calc-score "random")
+  set score-betray  (calc-score "betray" )
+  set score-tit-for-tat  (calc-score "tit-for-tat")
 end
 
 ;; returns the total score for a strategy if any turtles exist that are playing it
-to-report calc-score [strategy-type num-with-strategy]
-  ifelse num-with-strategy > 0 [
+to-report calc-score [strategy-type]
     report (sum [ score ] of (turtles with [ strategy = strategy-type ]))
-  ] [
-    report 0
-  ]
 end
 
 
@@ -267,7 +276,7 @@ standard-speed
 standard-speed
 0
 5
-2.0
+1.0
 1
 1
 NIL
@@ -312,18 +321,21 @@ PLOT
 47
 1620
 568
-Average cumulative wins of each population
-NIL
-NIL
+Average cumulative payoffs of each population
+Iterations
+Average payoff
 0.0
 10.0
 0.0
 10.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
+"cooperate" 1.0 0 -10899396 true "" "if num-cooperate-games > 0 [plot score-cooperate / (num-cooperate-games)]"
+"betray" 1.0 0 -2674135 true "" "if num-betray-games > 0 [plot score-betray / (num-betray-games)]"
+"random" 1.0 0 -13345367 true "" "if num-random-games > 0 [plot score-random / (num-random-games)]"
+"tit-for-tat" 1.0 0 -1184463 true "" "if num-tit-for-tat-games > 0 [plot score-tit-for-tat / (num-tit-for-tat-games)]"
 
 @#$#@#$#@
 ## WHAT IS IT?
