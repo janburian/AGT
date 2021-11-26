@@ -11,7 +11,6 @@ turtles-own [
   partnered? ;; boolovská hodnota, která říká, zda má/nemá želva soupeře
   partner ;; kokrétní soupeř
   partner-history
-
 ]
 
 globals [
@@ -90,7 +89,6 @@ to go      ;; hlavní procedura
   ask partnered-turtles [ select-action ]
   ask partnered-turtles [ play-a-round ]
   do-scoring
-
   tick
 
 end
@@ -116,8 +114,7 @@ to partner-up
 end
 
 to clear-last-round
-  let partnered-turtles turtles with [ partnered? ]
-  ask partnered-turtles [ release-partners ]
+  ask  [ release-partners ]
 end
 
 ;;release partner and turn around to leave
@@ -144,16 +141,17 @@ end
 ;;calculate the payoff for this round
 to get-payoff
   set partner-betrayed? [betray-now?] of partner
+  let partner2 [partner] of partner
 
   ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
   ifelse partner-betrayed? [ ;; 1. moznost - partner zradi
     ifelse betray-now? [ ;; zradim ja i partner
       ask partner [set score (score + 1)]
-      ask self [set score (score + 1)]
+      ask partner2 [set score (score + 1)]
     ]
     [ ;; spolupracuji, ale partner zradi
       ask partner [set score (score + 4)]
-      ask self [set score (score + 0)]
+      ask partner2 [set score (score + 0)]
     ]
   ]
 
@@ -161,11 +159,11 @@ to get-payoff
     ifelse betray-now?
     [ ;; partner spolupracuje, ale ja zradim
       ask partner [set score (score + 0)]
-      ask self [set score (score + 4)]
+      ask partner2 [set score (score + 4)]
     ]
     [ ;; partner i ja spolupracujeme
       ask partner [set score (score + 3)]
-      ask self [set score (score + 3)]
+      ask partner2 [set score (score + 3)]
     ]
   ]
 end
@@ -175,6 +173,9 @@ to update-history
   if strategy = "tit-for-tat" [ tit-for-tat-history-update ]
 end
 
+
+
+;;; STRATEGIES
 to cooperate
   set num-cooperate-games num-cooperate-games + 1
   set betray-now? false
@@ -187,11 +188,7 @@ end
 
 to act-randomly
   set num-random-games num-random-games + 1
-  ifelse (random 100 < 50) [
-    set betray-now? true
-  ] [
-    set betray-now? false
-  ]
+  set betray-now? one-of [ true false ]
 end
 
 to tit-for-tat
@@ -209,6 +206,8 @@ to tit-for-tat-history-update
 end
 
 
+
+;;; PLOTTING
 ;;calculate the total scores of each strategy
 to do-scoring
   set score-cooperate  (calc-score "cooperate")
@@ -221,7 +220,6 @@ end
 to-report calc-score [strategy-type]
     report (sum [ score ] of (turtles with [ strategy = strategy-type ]))
 end
-
 
 
 @#$#@#$#@
@@ -276,7 +274,7 @@ standard-speed
 standard-speed
 0
 5
-1.0
+0.0
 1
 1
 NIL
@@ -319,8 +317,8 @@ NIL
 PLOT
 982
 47
-1620
-568
+1380
+308
 Average cumulative payoffs of each population
 Iterations
 Average payoff
