@@ -34,7 +34,6 @@ to setup  ;; nastavení
   set population-size num-population
   setup-populations
   reset-ticks
-
 end
 
 to setup-populations
@@ -90,6 +89,8 @@ to go      ;; hlavní procedura
   ask partnered-turtles [ play-a-round ]
   do-scoring
   tick
+
+  ;;if (ticks > 50) [stop]
 
 end
 
@@ -274,7 +275,7 @@ standard-speed
 standard-speed
 0
 5
-0.0
+2.0
 1
 1
 NIL
@@ -317,15 +318,15 @@ NIL
 PLOT
 982
 47
-1380
-308
+1580
+456
 Average cumulative payoffs of each population
 Iterations
 Average payoff
 0.0
 10.0
 0.0
-10.0
+5.0
 true
 true
 "" ""
@@ -683,6 +684,17 @@ NetLogo 6.1.1
 @#$#@#$#@
 <experiments>
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="num-population">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="standard-speed">
+      <value value="2"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment2" repetitions="10" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count turtles</metric>
