@@ -1,4 +1,5 @@
 ;; Druhá semestrální práce z předmětu AGT (Opakované vězňovo dilema)
+;; Některé části čerpány z modelu PD N-Person Iterated (knihovna NetLoga)
 ;; Jan Burian
 
 
@@ -79,7 +80,13 @@ to go      ;; hlavní procedura
   ask partnered-turtles [ play-a-round ]
   do-scoring
   tick
+end
 
+to clear-last-round
+  ask turtles with [ partnered? ] [
+    set partnered? false
+    set partner nobody
+  ]
 end
 
 to move                ;; procedura pohybu
@@ -115,18 +122,10 @@ to play-a-round ;;turtle procedure
   update-history-tit-for-tat ;;store the results for next time
 end
 
-to clear-last-round
-  ask turtles with [ partnered? ] [
-    set partnered? false
-    set partner nobody
-  ]
-end
-
 
 ;;calculate the scores for this round
 to get-scores
   set partner-betrayal ([betray-now?] of partner)
-
   let me ([partner] of partner)
 
   ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
@@ -281,10 +280,10 @@ NIL
 1
 
 PLOT
-982
-47
-1580
-456
+964
+38
+1562
+447
 Average cumulative payoffs of each population
 Iterations
 Average payoff
