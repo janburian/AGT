@@ -6,8 +6,8 @@ turtles-own [
   score
   strategy ;; strategie
   betray-now?
-  partner-betrayed?
-  partnered? ;; boolovská hodnota, která říká, zda má/nemá želva soupeře
+  partner-betrayal
+  partnered? ;; boolovská hodnota, která říká, zda má/nemá želva partnera
   partner ;; kokrétní soupeř
   partner-history
 ]
@@ -25,7 +25,6 @@ globals [
 
   population-size
 ]
-
 
 
 to setup  ;; nastavení
@@ -81,8 +80,6 @@ to go      ;; hlavní procedura
   do-scoring
   tick
 
-  ;;if (ticks > 50) [stop]
-
 end
 
 to move                ;; procedura pohybu
@@ -103,12 +100,19 @@ to find-partner
       ]
     ]
   ]
+end
 
+;;choose an action based upon the strategy being played
+to select-action ;;turtle procedure
+  if strategy = "cooperate" [ cooperate ]
+  if strategy = "betray" [ betray ]
+  if strategy = "random" [ act-randomly ]
+  if strategy = "tit-for-tat" [ tit-for-tat ]
 end
 
 to play-a-round ;;turtle procedure
-  get-payoff      ;;calculate the payoff for this round
-  update-history ;;store the results for next time
+  get-scores      ;;calculate the scores for this round
+  update-history-tit-for-tat ;;store the results for next time
 end
 
 to clear-last-round
@@ -119,29 +123,20 @@ to clear-last-round
 end
 
 
-;;choose an action based upon the strategy being played
-to select-action ;;turtle procedure
-  if strategy = "cooperate" [ cooperate ]
-  if strategy = "betray" [ betray ]
-  if strategy = "random" [ act-randomly ]
-  if strategy = "tit-for-tat" [ tit-for-tat ]
-end
-
-
-;;calculate the payoff for this round
-to get-payoff
-  set partner-betrayed? [betray-now?] of partner
-  let partner2 [partner] of partner
+;;calculate the scores for this round
+to get-scores
+  set partner-betrayal ([betray-now?] of partner)
+  let me ([partner] of partner)
 
   ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
-  ifelse partner-betrayed? [ ;; 1. moznost - partner zradi
+  ifelse partner-betrayal [ ;; 1. moznost - partner zradi
     ifelse betray-now? [ ;; zradim ja i partner
       ask partner [set score (score + 1)]
-      ask partner2 [set score (score + 1)]
+      ask me [set score (score + 1)]
     ]
     [ ;; spolupracuji, ale partner zradi
       ask partner [set score (score + 4)]
-      ask partner2 [set score (score + 0)]
+      ask me [set score (score + 0)]
     ]
   ]
 
@@ -149,19 +144,15 @@ to get-payoff
     ifelse betray-now?
     [ ;; partner spolupracuje, ale ja zradim
       ask partner [set score (score + 0)]
-      ask partner2 [set score (score + 4)]
+      ask me [set score (score + 4)]
     ]
     [ ;; partner i ja spolupracujeme
       ask partner [set score (score + 3)]
-      ask partner2 [set score (score + 3)]
+      ask me [set score (score + 3)]
     ]
   ]
 end
 
-;;update PARTNER-HISTORY
-to update-history
-  if strategy = "tit-for-tat" [ tit-for-tat-history-update ]
-end
 
 
 ;;; STRATEGIES
@@ -182,18 +173,20 @@ end
 
 to tit-for-tat
   set num-tit-for-tat-games num-tit-for-tat-games + 1
-  set partner-betrayed? item ([who] of partner) partner-history
-  ifelse (partner-betrayed?) [
+  set partner-betrayal item ([who] of partner) partner-history
+  ifelse (partner-betrayal) [
     set betray-now? true
   ] [
     set betray-now? false
   ]
 end
 
-to tit-for-tat-history-update
-  set partner-history (replace-item ([who] of partner) partner-history partner-betrayed?)
+;;update PARTNER-HISTORY
+to update-history-tit-for-tat
+  if strategy = "tit-for-tat" [
+     set partner-history (replace-item ([who] of partner) partner-history partner-betrayal)
+  ]
 end
-
 
 
 ;;; PLOTTING
