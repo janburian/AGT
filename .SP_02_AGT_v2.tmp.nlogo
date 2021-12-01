@@ -126,29 +126,29 @@ end
 ;;calculate the scores for this round
 to get-scores
   set partner-betrayal ([betray-now?] of partner)
-  let me ([partner] of partner)
+  let ally [partner] of self
 
   ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
   ifelse partner-betrayal [ ;; 1. moznost - partner zradi
     ifelse betray-now? [ ;; zradim ja i partner
-      ask partner [set score (score + 1)]
-      ask me [set score (score + 1)]
+      ask ally [set score (score + 1)]
+      ask self [set score (score + 1)]
     ]
     [ ;; spolupracuji, ale partner zradi
-      ask partner [set score (score + 4)]
-      ask me [set score (score + 0)]
+      ask ally [set score (score + 4)]
+      ask self [set score (score + 0)]
     ]
   ]
 
   [ ;; 2. moznost - partner spolupracuje
     ifelse betray-now?
     [ ;; partner spolupracuje, ale ja zradim
-      ask partner [set score (score + 0)]
-      ask me [set score (score + 4)]
+      ask ally [set score (score + 0)]
+      ask self [set score (score + 4)]
     ]
     [ ;; partner i ja spolupracujeme
-      ask partner [set score (score + 3)]
-      ask me [set score (score + 3)]
+      ask ally [set score (score + 3)]
+      ask self [set score (score + 3)]
     ]
   ]
 end
@@ -299,6 +299,16 @@ PENS
 "betray" 1.0 0 -2674135 true "" "if num-betray-games > 0 [plot score-betray / (num-betray-games)]"
 "random" 1.0 0 -13345367 true "" "if num-random-games > 0 [plot score-random / (num-random-games)]"
 "tit-for-tat" 1.0 0 -1184463 true "" "if num-tit-for-tat-games > 0 [plot score-tit-for-tat / (num-tit-for-tat-games)]"
+
+TEXTBOX
+66
+285
+216
+342
+\t\tCooperate\t\tBetray\nCooperate\t3, 3\t\t\t0, 4\nBetray\t\t4, 0\t\t\t1, 1
+15
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
