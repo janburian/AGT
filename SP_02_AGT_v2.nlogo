@@ -3,6 +3,7 @@
 
 
 turtles-own [
+  speed
   score
   strategy ;; strategie
   betray-now?
@@ -31,8 +32,13 @@ globals [
 to setup  ;; nastavení
   clear-all
   set population-size num-population
-  create-populations
+  setup-populations
   reset-ticks
+end
+
+to setup-populations
+  create-populations
+  setup-common-variables
 end
 
 to create-populations
@@ -40,11 +46,14 @@ to create-populations
   create-turtles num-population [ set strategy "betray" set color red ]
   create-turtles num-population [ set strategy "tit-for-tat" set color blue ]
   create-turtles num-population [ set strategy "random" set color white ]
+end
 
+to setup-common-variables
   ask turtles [
    set shape "person"
    set size 1
 
+   set speed standard-speed
    set score 0
    set partnered? false
    set partner nobody
@@ -110,10 +119,13 @@ to find-partner
 end
 
 to clear-last-round
-  ask turtles with [ partnered? ] [
-    set partnered? false
-    set partner nobody
-  ]
+  ask turtles with [ partnered? ] [ release-partners ]
+end
+
+;;release partner and turn around to leave
+to release-partners
+  set partnered? false
+  set partner nobody
 end
 
 
@@ -161,6 +173,7 @@ to update-history
 end
 
 
+
 ;;; STRATEGIES
 to cooperate
   set num-cooperate-games num-cooperate-games + 1
@@ -206,6 +219,8 @@ end
 to-report calc-score [strategy-type]
     report (sum [ score ] of (turtles with [ strategy = strategy-type ]))
 end
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 236
@@ -244,6 +259,21 @@ num-population
 1
 100
 50.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+22
+101
+194
+134
+standard-speed
+standard-speed
+0
+5
+2.0
 1
 1
 NIL
