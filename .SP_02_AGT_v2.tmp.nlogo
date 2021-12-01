@@ -3,6 +3,7 @@
 
 
 turtles-own [
+  speed
   score
   strategy ;; strategie
   betray-now?
@@ -45,6 +46,7 @@ to create-populations
    set shape "person"
    set size 1
 
+   set speed standard-speed
    set score 0
    set partnered? false
    set partner nobody
@@ -246,6 +248,21 @@ num-population
 1
 100
 50.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+22
+101
+194
+134
+standard-speed
+standard-speed
+0
+5
+0.0
 1
 1
 NIL
