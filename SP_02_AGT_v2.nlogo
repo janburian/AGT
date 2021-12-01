@@ -75,9 +75,9 @@ to go      ;; hlavní procedura
   clear-last-round
   move
   ask turtles [ find-partner ]
-  let partnered-turtles turtles with [ partnered? = true]
-  ask partnered-turtles [ select-action ]
-  ask partnered-turtles [ play-a-round ]
+  ;;let partnered-turtles turtles with [ partnered? = true]
+  ;;ask partnered-turtles [ select-action ]
+  ;;ask partnered-turtles [ play-a-round ]
   do-scoring
   tick
 
@@ -103,6 +103,10 @@ to find-partner
       ]
     ]
   ]
+  select-action
+  get-payoff myself partner
+  update-history
+
 end
 
 to clear-last-round
@@ -122,24 +126,18 @@ to select-action ;;turtle procedure
 end
 
 
-to play-a-round ;;turtle procedure
-  get-payoff      ;;calculate the payoff for this round
-  update-history ;;store the results for next time
-end
-
 ;;calculate the payoff for this round
-to get-payoff
-  set partner-betrayed? [betray-now?] of partner
-  let partner2 [partner] of partner
+to get-payoff [ partner1 partner2 ]
+  set partner-betrayed? [betray-now?] of partner2
 
   ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
   ifelse partner-betrayed? [ ;; 1. moznost - partner zradi
     ifelse betray-now? [ ;; zradim ja i partner
-      ask partner [set score (score + 1)]
+      ask partner1 [set score (score + 1)]
       ask partner2 [set score (score + 1)]
     ]
     [ ;; spolupracuji, ale partner zradi
-      ask partner [set score (score + 4)]
+      ask partner1 [set score (score + 4)]
       ask partner2 [set score (score + 0)]
     ]
   ]
@@ -147,11 +145,11 @@ to get-payoff
   [ ;; 2. moznost - partner spolupracuje
     ifelse betray-now?
     [ ;; partner spolupracuje, ale ja zradim
-      ask partner [set score (score + 0)]
+      ask partner1 [set score (score + 0)]
       ask partner2 [set score (score + 4)]
     ]
     [ ;; partner i ja spolupracujeme
-      ask partner [set score (score + 3)]
+      ask partner1 [set score (score + 3)]
       ask partner2 [set score (score + 3)]
     ]
   ]
