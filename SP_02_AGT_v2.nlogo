@@ -1,5 +1,5 @@
 ;; Druhá semestrální práce z předmětu AGT (Opakované vězňovo dilema)
-;; Některé části čerpány z modelu PD N-Person Iterated (knihovna NetLoga)
+;; Některé části čerpány z modelu PD N-Person Iterated (knihovna NetLoga), autor Uri Wilensky
 ;; Jan Burian
 
 
