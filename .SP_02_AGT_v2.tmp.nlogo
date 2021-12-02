@@ -300,16 +300,6 @@ PENS
 "random" 1.0 0 -13345367 true "" "if num-random-games > 0 [plot score-random / (num-random-games)]"
 "tit-for-tat" 1.0 0 -1184463 true "" "if num-tit-for-tat-games > 0 [plot score-tit-for-tat / (num-tit-for-tat-games)]"
 
-TEXTBOX
-66
-285
-216
-342
-\t\tCooperate\t\tBetray\nCooperate\t3, 3\t\t\t0, 4\nBetray\t\t4, 0\t\t\t1, 1
-15
-0.0
-1
-
 @#$#@#$#@
 ## WHAT IS IT?
 
