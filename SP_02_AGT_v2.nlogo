@@ -9,7 +9,7 @@ turtles-own [
   betray-now?
   partner-betrayal
   partnered? ;; boolovská hodnota, která říká, zda má/nemá želva partnera
-  partner ;; kokrétní soupeř
+  partner ;; konkrétní partner
   partner-history
 ]
 
@@ -23,14 +23,11 @@ globals [
   num-betray-games
   num-random-games
   num-tit-for-tat-games
-
-  population-size
 ]
 
 
 to setup  ;; nastavení
   clear-all
-  set population-size num-population
   create-populations
   reset-ticks
 end
@@ -125,7 +122,7 @@ end
 
 ;;calculate the scores for this round
 to get-scores
-  set partner-betrayal ([betray-now?] of partner)
+  set partner-betrayal ([betray-now?] of partner) ;; proměnná, která určuje zradu nebo spolupráci partnera
   let ally [partner] of self
 
   ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
@@ -289,7 +286,7 @@ Iterations
 Average payoff
 0.0
 10.0
-0.0
+2.0
 5.0
 true
 true
