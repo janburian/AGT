@@ -72,6 +72,8 @@ to go      ;; hlavní procedura
   ask partnered-turtles [ play-a-round ]
   do-scoring
   tick
+
+  if ticks > 10000 [ stop ]
 end
 
 to clear-last-round
@@ -634,30 +636,6 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
-<experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <metric>count turtles</metric>
-    <enumeratedValueSet variable="num-population">
-      <value value="50"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="standard-speed">
-      <value value="2"/>
-    </enumeratedValueSet>
-  </experiment>
-  <experiment name="experiment2" repetitions="10" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <metric>count turtles</metric>
-    <enumeratedValueSet variable="num-population">
-      <value value="50"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="standard-speed">
-      <value value="2"/>
-    </enumeratedValueSet>
-  </experiment>
-</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
