@@ -73,7 +73,7 @@ to go      ;; hlavní procedura
   do-scoring
   tick
 
-  if ticks > 1000 [ stop ]
+  if ticks >  [ stop ]
 end
 
 to clear-last-round
@@ -289,6 +289,50 @@ PENS
 "betray" 1.0 0 -2674135 true "" "plot (score-betray / num-population)"
 "random" 1.0 0 -13345367 true "" "plot (score-random / num-population)"
 "tit-for-tat" 1.0 0 -1184463 true "" "plot (score-tit-for-tat / num-population)"
+
+MONITOR
+969
+478
+1241
+527
+Average cummulative payoff (cooperate)
+score-cooperate / num-population
+17
+1
+12
+
+MONITOR
+969
+539
+1217
+588
+Average cummulative payoff (betray)
+score-betray / num-population
+17
+1
+12
+
+MONITOR
+969
+598
+1224
+647
+Average cummulative payoff (random)
+score-random / num-population
+17
+1
+12
+
+MONITOR
+969
+659
+1235
+708
+Average cummulative payoff (tit-for-tat)
+score-tit-for-tat / num-population
+17
+1
+12
 
 @#$#@#$#@
 ## WHAT IS IT?
