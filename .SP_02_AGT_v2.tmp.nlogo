@@ -61,9 +61,8 @@ to setup-history-lists
   ]
 end
 
-;;---------------------------------------------------------------------------------------------------------------------
-
-to go      ;; hlavní procedura
+;;; HLAVNÍ PROCEDURA
+to go
   clear-last-round
   move
   ask turtles [ find-partner ]
@@ -73,7 +72,7 @@ to go      ;; hlavní procedura
   do-scoring
   tick
 
-  if ticks >  [ stop ]
+  if ticks > 10000 [ stop ]
 end
 
 to clear-last-round
@@ -122,7 +121,7 @@ to get-scores
   set partner-betrayal ([betray-now?] of partner) ;; proměnná, která určuje zradu nebo spolupráci partnera
   let ally [partner] of self
 
-  ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: ano/ne
+  ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: zradi/spolupracuje
   ifelse partner-betrayal [ ;; 1. moznost - partner zradi
     ifelse betray-now? [ ;; zradim ja i partner
       ask ally [set score (score + 1)]
@@ -149,7 +148,7 @@ end
 
 
 
-;;; STRATEGIES
+;;; STRATEGIE
 to cooperate
   set betray-now? false
 end
