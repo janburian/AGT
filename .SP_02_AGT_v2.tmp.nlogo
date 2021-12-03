@@ -18,6 +18,8 @@ globals [
   score-betray
   score-random
   score-tit-for-tat
+
+
 ]
 
 
@@ -149,18 +151,22 @@ end
 
 ;;; STRATEGIES
 to cooperate
+  set num-cooperate-games num-cooperate-games + 1
   set betray-now? false
 end
 
 to betray
+  set num-betray-games num-betray-games + 1
   set betray-now? true
 end
 
 to act-randomly
+  set num-random-games num-random-games + 1
   set betray-now? one-of [ true false ]
 end
 
 to tit-for-tat
+  set num-tit-for-tat-games num-tit-for-tat-games + 1
   set partner-betrayal item ([who] of partner) partner-history
   ifelse (partner-betrayal) [
     set betray-now? true
