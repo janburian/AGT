@@ -118,7 +118,7 @@ to play-a-round ;; metoda agenta
 end
 
 
-;;calculate the scores for this round
+;; výpočet skóre za jedno kolo
 to get-scores
   set partner-betrayal ([betray-now?] of partner) ;; proměnná, která určuje zradu nebo spolupráci partnera
   let ally [partner] of self ;; získání 2. hráče
@@ -280,7 +280,7 @@ PLOT
 38
 1562
 447
-Average cumulative payoffs of each population
+Average cumulative scores of each population
 Iterations
 Average payoff
 0.0
@@ -301,7 +301,7 @@ MONITOR
 478
 1241
 527
-Average cummulative payoff (cooperate)
+Average cummulative score (cooperate)
 score-cooperate / num-population
 17
 1
@@ -312,7 +312,7 @@ MONITOR
 539
 1217
 588
-Average cummulative payoff (betray)
+Average cummulative score (betray)
 score-betray / num-population
 17
 1
@@ -323,7 +323,7 @@ MONITOR
 598
 1224
 647
-Average cummulative payoff (random)
+Average cummulative score (random)
 score-random / num-population
 17
 1
@@ -334,7 +334,7 @@ MONITOR
 659
 1235
 708
-Average cummulative payoff (tit-for-tat)
+Average cummulative score (tit-for-tat)
 score-tit-for-tat / num-population
 17
 1
