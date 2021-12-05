@@ -200,13 +200,13 @@ to-report calc-score [strategy-type]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-236
-36
-930
-731
+231
+28
+797
+595
 -1
 -1
-20.8
+16.91
 1
 10
 1
@@ -276,10 +276,10 @@ NIL
 1
 
 PLOT
-964
-38
-1562
-447
+820
+26
+1418
+435
 Average cumulative scores of each population
 Iterations
 Average payoff
@@ -297,10 +297,10 @@ PENS
 "tit-for-tat" 1.0 0 -1184463 true "" "plot (score-tit-for-tat / num-population)"
 
 MONITOR
-969
-478
-1241
-527
+821
+453
+1093
+502
 Average cummulative score (cooperate)
 score-cooperate / num-population
 17
@@ -308,10 +308,10 @@ score-cooperate / num-population
 12
 
 MONITOR
-969
-539
-1217
-588
+1112
+454
+1360
+503
 Average cummulative score (betray)
 score-betray / num-population
 17
@@ -319,10 +319,10 @@ score-betray / num-population
 12
 
 MONITOR
-969
-598
-1224
-647
+822
+515
+1077
+564
 Average cummulative score (random)
 score-random / num-population
 17
@@ -330,10 +330,10 @@ score-random / num-population
 12
 
 MONITOR
-969
-659
-1235
-708
+1114
+525
+1380
+574
 Average cummulative score (tit-for-tat)
 score-tit-for-tat / num-population
 17
@@ -686,6 +686,19 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="10" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>score-cooperate / num-population</metric>
+    <metric>score-betray / num-population</metric>
+    <metric>score-random / num-population</metric>
+    <metric>score-tit-for-tat / num-population</metric>
+    <enumeratedValueSet variable="num-population">
+      <value value="50"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
