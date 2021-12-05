@@ -4,16 +4,17 @@
 
 
 turtles-own [
-  score
+  score ;; skóre agenta
   strategy ;; strategie
-  betray-now?
-  partner-betrayal
+  betray-now? ;; boolovská hodnota, která říká, zda želva zradí/spolupracuje
+  partner-betrayal ;; pomocná proměnná
   partnered? ;; boolovská hodnota, která říká, zda má/nemá želva partnera
   partner ;; konkrétní partner
-  partner-history
+  partner-history ;; list, ve kterém jsou uloženi partneři z minulých kol hry (pro strategii "oko za oko, zub za zub")
 ]
 
 globals [
+  ;; celková skóre populací
   score-cooperate
   score-betray
   score-random
@@ -42,24 +43,25 @@ to create-populations
    set partner nobody
    setxy random-pxcor random-pycor
   ]
-  setup-history-lists ;;initialize PARTNER-HISTORY list in all turtles
+  setup-history-lists ;; inicializace PARTNER-HISTORY listu u všech želv
 end
 
-;;initialize PARTNER-HISTORY list in all turtles
 to setup-history-lists
   let num-turtles count turtles
-  let default-history [] ;;initialize the DEFAULT-HISTORY variable to be a list
+  let default-history [] ;; vytvoření proměnné DEFAULT-HISTORY jako list
 
-  ;;create a list with NUM-TURTLE elements for storing partner histories
+  ;; inicializace DEFAULT-HISTORY listu
   repeat num-turtles [
-    set default-history (fput false default-history) ;; fput adds an item (= false) to the beginning of a list
+    set default-history (fput false default-history) ;; fput přidává věc (= false) na začátek listu
   ]
 
-  ;;give each turtle a copy of this list for tracking partner histories
+  ;; každá želva obdrží kopii tohoto listu pro sledování historie partnerů
   ask turtles [
     set partner-history default-history
   ]
 end
+
+
 
 ;;; HLAVNÍ PROCEDURA
 to go
@@ -89,10 +91,10 @@ to move                ;; procedura pohybu
   ]
 end
 
-to find-partner
-  if (not partnered?) [
-    set partner one-of (turtles in-radius 1) with [ not partnered? ]
-    if partner != nobody [              ;;if successful grabbing a partner, partner up
+to find-partner         ;; procedura nalezení partnera
+  if (not partnered?) [ ;; pokud želva nemá partnera
+    set partner one-of (turtles in-radius 1) with [ not partnered? ] ;; najde si jakéhokoliv partnera ve vzdálenosti 1
+    if partner != nobody [ ;; želva nalezla partnera
       set partnered? true
       ask partner [
         set partnered? true
@@ -102,44 +104,45 @@ to find-partner
   ]
 end
 
-;;choose an action based upon the strategy being played
-to select-action ;;turtle procedure
+;; výběr akce na základě strategie
+to select-action ;; metoda agenta
   if strategy = "cooperate" [ cooperate ]
   if strategy = "betray" [ betray ]
   if strategy = "random" [ act-randomly ]
   if strategy = "tit-for-tat" [ tit-for-tat ]
 end
 
-to play-a-round ;;turtle procedure
-  get-scores      ;;calculate the scores for this round
-  update-history-tit-for-tat ;;store the results for next time
+to play-a-round ;; metoda agenta
+  get-scores      ;; počítá skóre za jedno kolo
+  update-history-tit-for-tat ;; uchovává výsledky
 end
 
 
 ;;calculate the scores for this round
 to get-scores
   set partner-betrayal ([betray-now?] of partner) ;; proměnná, která určuje zradu nebo spolupráci partnera
-  let ally [partner] of self
+  let ally [partner] of self ;; získání 2. hráče
 
-  ;; podminka, ktera, zjistuje, zda partner zradi - 2 moznosti: zradi/spolupracuje
-  ifelse partner-betrayal [ ;; 1. moznost - partner zradi
-    ifelse betray-now? [ ;; zradim ja i partner
+  ;; podmínka, která, zjišťuje, zda partner zradí - 2 možnosti: zradí/spolupracuje
+  ;; skóre jsou určená na základě výplatní matice
+  ifelse partner-betrayal [ ;; 1. možnost - partner zradí
+    ifelse betray-now? [ ;; zradím já i partner
       ask ally [set score (score + 1)]
       ask self [set score (score + 1)]
     ]
-    [ ;; spolupracuji, ale partner zradi
+    [ ;; spolupracuji, ale partner zradí
       ask ally [set score (score + 4)]
       ask self [set score (score + 0)]
     ]
   ]
 
-  [ ;; 2. moznost - partner spolupracuje
+  [ ;; 2. možnost - partner spolupracuje
     ifelse betray-now?
     [ ;; partner spolupracuje, ale ja zradim
       ask ally [set score (score + 0)]
       ask self [set score (score + 4)]
     ]
-    [ ;; partner i ja spolupracujeme
+    [ ;; partner i já spolupracujeme
       ask ally [set score (score + 3)]
       ask self [set score (score + 3)]
     ]
@@ -149,20 +152,24 @@ end
 
 
 ;;; STRATEGIE
+;; Spolupráce
 to cooperate
   set betray-now? false
 end
 
+;; Zrada
 to betray
   set betray-now? true
 end
 
+;; Náhodná akce
 to act-randomly
-  set betray-now? one-of [ true false ]
+  set betray-now? one-of [ true false ] ;; zrada vs spolupráce
 end
 
+;; Oko za oko, zub za zub
 to tit-for-tat
-  set partner-betrayal item ([who] of partner) partner-history
+  set partner-betrayal item ([who] of partner) partner-history ;; akce na základě partnerovy historie
   ifelse (partner-betrayal) [
     set betray-now? true
   ] [
@@ -170,7 +177,7 @@ to tit-for-tat
   ]
 end
 
-;;update PARTNER-HISTORY
+;; aktualizace partnerovy historie
 to update-history-tit-for-tat
   if strategy = "tit-for-tat" [
      set partner-history (replace-item ([who] of partner) partner-history partner-betrayal)
@@ -178,8 +185,8 @@ to update-history-tit-for-tat
 end
 
 
-;;; PLOTTING
-;;calculate the total scores of each strategy
+;;; VYKRESLOVÁNÍ
+;; výpočet celkového skóre jednotlivých populací
 to do-scoring
   set score-cooperate  (calc-score "cooperate")
   set score-random (calc-score "random")
@@ -187,7 +194,7 @@ to do-scoring
   set score-tit-for-tat  (calc-score "tit-for-tat")
 end
 
-;; returns the total score for a strategy if any turtles exist that are playing it
+;; vrací celkové skóre jednotlivých populací
 to-report calc-score [strategy-type]
     report (sum [ score ] of (turtles with [ strategy = strategy-type ]))
 end
