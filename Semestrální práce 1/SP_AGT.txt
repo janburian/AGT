@@ -1,0 +1,10 @@
+Rozšíření modelu
+1. inkubační doba
+	Člověk se nakazí a nějaký daný počet dní není infekční (a tudíž nešíří nemoc dál)
+2. smrtnost
+	Část lidí po uplynutí doby onemocnění místo uzdravení zemře (s ppstí "fatality-rate")
+3. imunita uzdravených
+	Uzdravení lidé mají jinou pravděpodobnost nakažení - ta stoupá s každým dnem a po 180 dnech je stejná jako u těch "imunitně naivních"
+4. očkování
+ 	Do systému přidáme (na začátku) určité procento očkovaných jedinců - ti pak mají násobně nižší pravděpodobnost nakažení a ještě vícenásobně menší pravděpodobnost
+	úmrtí. 

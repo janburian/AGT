@@ -1,0 +1,10 @@
+if ((color = green) and (random 100 < (hours / 24 / 180) * transmission-prob) and (vaccinated? = false)) [ ;; nakažení vyléčených jedinců, kteří však nejsou očkováni ;; TODO: predelat if vaccinated...
+          set color orange
+          set hours 0
+        ]
+
+        if ((color = green) and (random 100 < ((hours / 24 / 180) * transmission-prob) / 8) and (vaccinated? = true)) [  ;; u očkovaných jedinců je 8x menší pravděpodobnost nakažení, v tomto případě byl očkovaný už nakažený;
+                                                                                                                         ;; pravděpodobnost nakažení vyléčeného = (hours / 24 / 180) * (transmission-prob)
+          set color orange
+          set hours 0
+        ]

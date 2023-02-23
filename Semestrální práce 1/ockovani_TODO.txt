@@ -1,0 +1,26 @@
+if (color = red) [
+     let x random-poisson illness-duration     ;; "illness duration" je střední doba nakažení - nikoliv konstatní - proto vygenerujeme náhodné číslo z Poissonova rozdělení se střední hodnotou  "illness-duration"
+     if((hours > x * 24) [
+       let death-prob 0
+       (ifelse (vaccinated = true)) [
+	  set death-prob 
+          if random 100 < death-prob [
+           ..
+          ]
+        set color green
+	]
+       
+     ]
+
+     ((hours > x * 24) and vaccinated? = true and (random 100 < (fatality-rate / 25))) [  ;; ... pokud už tedy pacient byl nemocný víc dní než je ta jeho náhodně vygenerovaná doba nemoci, zemře s pravděpodobností fatality-rate / 25; očkovaný jedinec
+        set number-deaths-vaccinated number-deaths-vaccinated + 1
+        die
+        set hours 0
+     ]
+
+     (hours > x * 24) [ ;; ...jinak se pacient uzdraví
+        set color green
+        set hours 0
+     ])
+     set number-deaths (number-deaths-vaccinated + number-deaths-unvaccinated)
+   ]
